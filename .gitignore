@@ -109,9 +109,9 @@ yarn-error.log*
 yarn-debug.log*
 
 # 패키지 관리 관련 (수정: 패키지 파일은 버전 관리에 포함되어야 함)
-package.json
-package-lock.json
-yarn.lock
+!package.json
+!package-lock.json
+!yarn.lock
 
 # Fastlane 관련
 **/fastlane/report.xml
