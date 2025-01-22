@@ -159,3 +159,9 @@ babel.config.js
 .vscode/
 .idea/
 *.iml
+
+# API url
+.env
+
+# genesis file
+src/utils/misc/genesis.json

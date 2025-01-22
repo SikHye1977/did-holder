@@ -49,6 +49,21 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!-- http -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+	<key>NSAllowsArbitraryLoads</key>
+	<true/>
+	<key>NSExceptionDomains</key>
+	<dict>
+	<key>api.base.url</key>
+	<dict>
+	<key>NSExceptionAllowsInsecureHTTPLoads</key>
+	<true/>
+	</dict>
+	</dict>
+	</dict>
+	<!-- http -->
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>
