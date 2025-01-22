@@ -1,16 +1,33 @@
 import React from 'react';
 import {StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { signJsonLD } from '../utils/DidAuth';
+import { getItem } from '../utils/AsyncStorage';
 
-function TicketScreen() {
+const sign_doc = async() => {
+  const did = await getItem('DID');
+  const verkey = await getItem('Verkey');
+  const result = await signJsonLD(did, verkey);
+  console.log(result);
+}
+
+function DidAuthScreen() {
   return (
     <SafeAreaView>
       <View>
-        <Text>This is Ticket Screen</Text>
+        <Text>This is DID AUTH Screen</Text>
+      </View>
+      <View>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={sign_doc}
+        >
+          <Text style={styles.buttonText}>DID Auth로 로그인</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   )
-}
+};
 
 const styles = StyleSheet.create({
   button: {
@@ -35,4 +52,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TicketScreen;
+export default DidAuthScreen;
