@@ -1,17 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { signJsonLD } from '../utils/DidAuth';
-import { getItem } from '../utils/AsyncStorage';
 
-const sign_doc = async() => {
-  const did = await getItem('DID');
-  const verkey = await getItem('Verkey');
-  const result = await signJsonLD(did, verkey);
-  console.log(result);
-}
+import { getItem } from '../utils/AsyncStorage';
+import { encrypt_msg, decrypt_msg } from '../utils/DidAuth';
 
 function DidAuthScreen() {
+  const [ciphertext, setChiperText] = useState(null);
+
+  const encrypt = async() => {
+    const issuer_verkey = "3F8jjjiQy8z3iKxLD9jU1PFYAfWo48Cd9PHSS8N3z2Qv"
+    const verkey = await getItem('Verkey');
+    const result = await encrypt_msg('test', issuer_verkey, verkey);
+    setChiperText(result.ciphertext)
+    console.log(result);
+  }
+
+  const decrpyt = async() => {
+    if(!ciphertext) {
+      console.error('No Chiper Text exist!');
+    }
+    else{
+      const result = decrypt_msg(ciphertext);
+      console.log(result);
+    }
+  }
+
   return (
     <SafeAreaView>
       <View>
@@ -20,9 +34,15 @@ function DidAuthScreen() {
       <View>
         <TouchableOpacity
           style={styles.button}
-          onPress={sign_doc}
+          onPress={encrypt}
         >
-          <Text style={styles.buttonText}>DID Auth로 로그인</Text>
+          <Text style={styles.buttonText}>Challenge encrpyt</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={decrpyt}
+        >
+          <Text style={styles.buttonText}>Challenge decrypt</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

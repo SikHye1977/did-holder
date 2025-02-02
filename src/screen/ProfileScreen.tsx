@@ -51,6 +51,20 @@ function ProfileScreen() {
   }
   //-------------------------------------------------------------//
 
+  const fetch_did = async () => {
+    if (!did) {
+      Alert.alert('설정 실패', 'DID가 존재하지 않습니다.');
+      return;
+    }
+    try {
+      Alert.alert('설정 성공', 'DID가 퍼블릭 DID로 설정되었습니다.');
+    } catch (error) {
+      console.error('설정 실패:', error);
+      Alert.alert('설정 실패');
+    }
+  };
+
+
   // 디바이스에 저장된 DID를 불러옴
   const loadDid = async () => {
     try {
@@ -100,6 +114,12 @@ function ProfileScreen() {
               onPress={register_did}
               >
               <Text style={styles.buttonText}>DID 등록</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={fetch_did}
+              >
+              <Text style={styles.buttonText}>wallet에 DID 설정 fetch</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.button}

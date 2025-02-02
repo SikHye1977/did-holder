@@ -60,3 +60,23 @@ export async function registerDid(did: string, verkey: string, alias: string) {
     throw error;
   }
 }
+
+// 25.02.02 
+export async function fetchDid(did:string) {
+  const url = `http://${AGENT_URL}/wallet/did/public?did=${did}`;
+
+  try {
+    const response = await axios.post(url, {}, {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    });
+
+    console.log("Public DID Set Successfully:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to Set Public DID:", error);
+    throw error;
+  }
+}
