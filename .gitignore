@@ -165,3 +165,4 @@ babel.config.js
 
 # genesis file
 src/utils/misc/genesis.json
+src/misc/genesis.txn

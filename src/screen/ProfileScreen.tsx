@@ -2,22 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { createDid, registerDid } from '../utils/AgentSetup';
 import { removeItem, setItem } from '../utils/AsyncStorage';
 import { getItem } from '../utils/AsyncStorage';
-
+import { generateDID, registerDID } from '../utils/GenerateDID';
 
 function ProfileScreen() {
-  const [did, setDid] = useState<string | null>(null);
+  const [did, setDid] = useState<any>(null);
   const [verkey, setVerkey] = useState<string | null>(null);
+  const [secretkey, setSecretkey] = useState<string | null>(null);
 
-  // DID 생성 및 디바이스에 저장
+  // 25.02.10 indy vdr 활용해서 DID 등록하게 변경
   const create_did = async () => {
-    const result_did = await createDid();
-    setDid(result_did.result.did);
-    setVerkey(result_did.result.verkey);
-    await setItem('DID',result_did.result.did);
-    await setItem('Verkey',result_did.result.verkey);
+    const result_did = await generateDID();
+
+    setDid(result_did.did);
+    setVerkey(result_did.publicKey);
+    setSecretkey(result_did.privateKey);
+
+    await setItem('DID', result_did.did);
+    await setItem('Verkey',result_did.publicKey);
+    await setItem('Secretkey',result_did.privateKey);
   }
 
   const register_did = async () => {
@@ -26,7 +30,7 @@ function ProfileScreen() {
       return;
     }
     try {
-      await registerDid(did, verkey, 'Holder-demo-Test-DID');
+      await registerDID('J4BALc9uEa8F1GCy7uka7f', did, verkey);
       Alert.alert('등록 성공', 'Ledger에 DID가 등록되었습니다.');
     } catch (error) {
       console.error('등록 실패:', error);
@@ -43,6 +47,8 @@ function ProfileScreen() {
     }
     try {
       await removeItem('DID');
+      await removeItem('Verkey');
+      await removeItem('Secretkey');
       Alert.alert('삭제 성공', '디바이스에 저장된 DID를 삭제했습니다.');
     } catch (error) {
       console.error('삭제 실패:', error);
@@ -50,20 +56,6 @@ function ProfileScreen() {
     }
   }
   //-------------------------------------------------------------//
-
-  const fetch_did = async () => {
-    if (!did) {
-      Alert.alert('설정 실패', 'DID가 존재하지 않습니다.');
-      return;
-    }
-    try {
-      Alert.alert('설정 성공', 'DID가 퍼블릭 DID로 설정되었습니다.');
-    } catch (error) {
-      console.error('설정 실패:', error);
-      Alert.alert('설정 실패');
-    }
-  };
-
 
   // 디바이스에 저장된 DID를 불러옴
   const loadDid = async () => {
@@ -74,6 +66,9 @@ function ProfileScreen() {
       const storedVerkey = await getItem('Verkey');
       console.log(`저장된 DID의 Verkey : ${storedVerkey}`);
       setVerkey(storedVerkey);
+      const storedSecretKey = await getItem('Secretkey');
+      console.log(`저장된 DID의 SecretKey : ${storedSecretKey}`);
+      setSecretkey(storedSecretKey);
     } catch (error) {
       console.error('DID 로드 실패:', error);
     }
@@ -83,7 +78,6 @@ function ProfileScreen() {
   useEffect(() => {
     loadDid();
   }, []);
-  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -93,6 +87,7 @@ function ProfileScreen() {
           <View>
             <Text style={styles.didText}>My DID: {did}</Text>
             <Text style={styles.didText}>My DID's Verkey: {verkey}</Text>
+            <Text style={styles.didText}>My DID's SecretKey: {secretkey}</Text>
           </View>
         ) : (
           <Text style={styles.didText}>No DID Found</Text>
@@ -114,12 +109,6 @@ function ProfileScreen() {
               onPress={register_did}
               >
               <Text style={styles.buttonText}>DID 등록</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={fetch_did}
-              >
-              <Text style={styles.buttonText}>wallet에 DID 설정 fetch</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.button}
